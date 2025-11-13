@@ -1,5 +1,5 @@
 import { Component, createSignal, onMount, Show } from "solid-js";
-import BarwiseLanding from "./components/BarwiseLanding";
+import Landing from "./components/Landing";
 import InviteGate from "./components/InviteGate";
 
 const App: Component = () => {
@@ -17,7 +17,7 @@ const App: Component = () => {
 				console.log("Autorizzato!", authorized());
 			}} expectedCode="1111" />
 		}>
-			<BarwiseLanding />
+			<Landing />
 		</Show>
 	);
 };

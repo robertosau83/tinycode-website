@@ -1,12 +1,9 @@
 import { Component, createSignal, onMount } from "solid-js";
-import logoUrl from "../assets/Barwise_lite_512_noBorder_3.jpg";
+import logoUrl from "../assets/Ahead 512.png";
 import { isInviteCode } from "../inviteCodes";
 
 /**
  * Schermata di ingresso con codice d'invito (default: 1111)
- * - Stile coerente con BarWise (nero/bianco/#66cc8a)
- * - Salva stato in localStorage ("bw_invited" = "true")
- * - Accetta anche ?code=1111 da URL
  */
 const InviteGate: Component<{ onSuccess: () => void; expectedCode?: string }> = (props) => {
 	//const expected = props.expectedCode ?? "1111";
@@ -63,7 +60,7 @@ const InviteGate: Component<{ onSuccess: () => void; expectedCode?: string }> = 
 						<div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
 							<img
 								src={logoUrl}
-								alt="BarWise logo"
+								alt="Ahead logo"
 								class="h-12 w-12 rounded-full"
 							/>
 						</div>
@@ -79,9 +76,6 @@ const InviteGate: Component<{ onSuccess: () => void; expectedCode?: string }> = 
 						<h1 class="my-10 text-3xl font-extrabold md:text-4xl">
 							Entra con il tuo <span class="text-[#66cc8a]">codice di invito</span>
 						</h1>
-						{/* <p class="mt-2 opacity-80">
-							Inserisci il codice riportato sul biglietto BarWise.
-						</p> */}
 					</div>
 
 					<form onSubmit={submit} class="grid gap-4">
