@@ -29,7 +29,18 @@ const Landing: Component = () => {
 		if (!href || !href.startsWith("#")) return
 		e.preventDefault()
 		const el = document.querySelector(href)
-		if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+		if (!el) return
+
+		//const headerOffset = 250 // altezza del tuo header sticky
+		const headerOffset = window.innerWidth < 768 ? 250 : 0
+		const elementPosition = el.getBoundingClientRect().top + window.scrollY
+		const offsetPosition = elementPosition - headerOffset
+
+		window.scrollTo({
+			top: offsetPosition,
+			behavior: "smooth",
+		})
+
 		setMenuOpen(false)
 	}
 
@@ -53,99 +64,98 @@ const Landing: Component = () => {
 		localStorage.removeItem("ahead_invited")
 		window.location.reload()
 	}
-
 	return (
 		<div class="bg-[#0f172a] text-white selection:bg-blue-700 selection:text-white">
 			{/* Header */}
-			<header
-				id="ahead-header"
-				class="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0f172a]/80 backdrop-blur-md transition-shadow"
-			>
-				<div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
-					<a href="#top" onClick={smoothScroll} class="flex items-center gap-3">
-						<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-							<img src={logoUrl} alt="Ahead logo" class="h-6 w-6 rounded-full" />
+			<header id="ahead-header" class="sticky top-0 z-40 w-full transition-shadow">
+				<div class="border-b border-white/10 bg-[#0f172a]/80 backdrop-blur-md">
+					<div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
+						<a href="#top" onClick={smoothScroll} class="flex items-center gap-3">
+							<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+								<img src={logoUrl} alt="Ahead logo" class="h-6 w-6 rounded-full" />
+							</div>
+							<span class="text-lg font-semibold tracking-wide">
+								<span class="text-blue-500">AHEAD</span>
+								{/* <div>{window.innerWidth}</div> */}
+							</span>
+						</a>
+
+						<nav class="hidden gap-6 md:flex">
+							{[
+								["Home", "#hero"],
+								["Funzioni", "#features"],
+								["Come funziona", "#how"],
+								["FAQ", "#faq"],
+							].map(([label, href]) => (
+								<a
+									href={href}
+									onClick={smoothScroll}
+									class="text-sm opacity-80 hover:opacity-100"
+								>
+									{label}
+								</a>
+							))}
+						</nav>
+
+						<div class="flex items-center gap-3">
+							<a
+								href="#cta"
+								onClick={smoothScroll}
+								class="hidden rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 md:inline-block"
+							>
+								Contattaci
+							</a>
+							<button
+								type="button"
+								onClick={logout}
+								class="hidden rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/5 md:inline-block"
+							>
+								Esci
+							</button>
+							<button
+								class="md:hidden"
+								aria-label="Apri menu"
+								onClick={() => setMenuOpen(!menuOpen())}
+							>
+								<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none">
+									<path
+										d="M4 6h16M4 12h16M4 18h16"
+										stroke="white"
+										stroke-width="2"
+										stroke-linecap="round"
+									/>
+								</svg>
+							</button>
 						</div>
-						<span class="text-lg font-semibold tracking-wide">
-							<span class="text-blue-500">AHEAD</span>
-						</span>
-					</a>
-
-					<nav class="hidden gap-6 md:flex">
-						{[
-							["Home", "#hero"],
-							["Funzioni", "#features"],
-							["Come funziona", "#how"],
-							["FAQ", "#faq"],
-						].map(([label, href]) => (
-							<a
-								href={href}
-								onClick={smoothScroll}
-								class="text-sm opacity-80 hover:opacity-100"
-							>
-								{label}
-							</a>
-						))}
-					</nav>
-
-					<div class="flex items-center gap-3">
-						<a
-							href="#cta"
-							onClick={smoothScroll}
-							class="hidden rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 md:inline-block"
-						>
-							Contattaci
-						</a>
-						<button
-							type="button"
-							onClick={logout}
-							class="hidden rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold hover:bg-white/5 md:inline-block"
-						>
-							Esci
-						</button>
-						<button
-							class="md:hidden"
-							aria-label="Apri menu"
-							onClick={() => setMenuOpen(!menuOpen())}
-						>
-							<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none">
-								<path
-									d="M4 6h16M4 12h16M4 18h16"
-									stroke="white"
-									stroke-width="2"
-									stroke-linecap="round"
-								/>
-							</svg>
-						</button>
 					</div>
-				</div>
 
-				<div
-					class={`md:hidden ${menuOpen() ? "block" : "hidden"} border-t border-white/10 bg-[#0f172a]`}
-				>
-					<nav class="mx-auto flex max-w-7xl flex-col px-5 py-3">
-						{[
-							["Home", "#hero"],
-							["Funzioni", "#features"],
-							["Come funziona", "#how"],
-							["FAQ", "#faq"],
-						].map(([label, href]) => (
+					<div
+						class={`md:hidden ${menuOpen() ? "block" : "hidden"} border-t border-white/10 bg-[#0f172a]`}
+					>
+						<nav class="mx-auto flex max-w-7xl flex-col px-5 py-3">
+							{[
+								["Home", "#hero"],
+								["Funzioni", "#features"],
+								["Come funziona", "#how"],
+								["FAQ", "#faq"],
+							].map(([label, href]) => (
+								<a
+									href={href}
+									onClick={smoothScroll}
+									class="rounded-lg px-3 py-2 text-sm opacity-80 hover:bg-white/5 hover:opacity-100"
+								>
+									{label}
+								</a>
+							))}
 							<a
-								href={href}
+								href="#cta"
 								onClick={smoothScroll}
-								class="rounded-lg px-3 py-2 text-sm opacity-80 hover:bg-white/5 hover:opacity-100"
+								class="mt-2 rounded-xl bg-blue-700 px-4 py-2 text-center text-sm font-semibold text-white"
 							>
-								{label}
+								Contattaci
 							</a>
-						))}
-						<a
-							href="#cta"
-							onClick={smoothScroll}
-							class="mt-2 rounded-xl bg-blue-700 px-4 py-2 text-center text-sm font-semibold text-white"
-						>
-							Contattaci
-						</a>
-					</nav>
+						</nav>
+					</div>
 				</div>
 			</header>
 
@@ -187,13 +197,13 @@ const Landing: Component = () => {
 								Scopri di più
 							</a>
 						</div>
-						<div class="flex flex-wrap items-center gap-4 pt-2 text-sm opacity-70">
+						{/* <div class="flex flex-wrap items-center gap-4 pt-2 text-sm opacity-70">
 							<span>Multi-account</span>
 							<span class="h-1 w-1 rounded-full bg-white/40" />
 							<span>Multi-valuta</span>
 							<span class="h-1 w-1 rounded-full bg-white/40" />
 							<span>Inflazione e rendimenti</span>
-						</div>
+						</div> */}
 					</div>
 
 					<div class="relative">
@@ -396,10 +406,10 @@ const Landing: Component = () => {
 				<div class="mx-auto max-w-7xl px-5 py-16 md:py-24">
 					<div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
 						<div>
-							<h2 class="text-3xl font-extrabold md:text-4xl">
+							<h2 class="font-extrabold md:text-4xl">
 								Porta avanti le tue finanze. Con AHEAD.
 							</h2>
-							<p class="mt-2 max-w-prose opacity-80 whitespace-nowrap">
+							<p class="mt-2 max-w-prose opacity-80 md:whitespace-nowrap ">
 								Registrati, imposta i tuoi conti e scopri subito la chiarezza del
 								tuo futuro finanziario.
 							</p>
