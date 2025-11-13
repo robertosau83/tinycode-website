@@ -3,7 +3,7 @@
 // Pattern: Aa#Bcc — leggibili, armoniosi e non ambigui.
 
 export const INVITE_CODES: string[] = [
-  "Ba7Rwe","Cu5Zen","Ro6Sky","Ve8Sun","Za3Mix","Ni9Pro","Du4Jet","So5Rad","Ke8Jam","Lu4Hop",
+  "Ro6Sky","Ve8Sun","Za3Mix","Ni9Pro","Du4Jet","So5Rad","Ke8Jam","Lu4Hop",
   "Pa7Neo","Fa6Lux","Gi8Max","Ra5Ace","Ti9Gem","Jo3Bee","Ka4Pop","Mo7Zip","Re5Hot","Su6Fun",
   "La8Zen","Mi9Rad","Po5Sky","Va3Sun","Xe4Pro","Yu6Mix","De7Jet","Fe8Neo","He9Ace","Je5Lux",
   "Lo7Fun","Na4Max","Pe6Hop","Qu9Bee","Ru3Gem","Te8Rad","We5Sun","Xa7Sky","Ye6Mix","Zo9Pro",

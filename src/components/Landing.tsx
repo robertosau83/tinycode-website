@@ -1,116 +1,81 @@
-import { Component, createSignal, onMount, onCleanup } from "solid-js";
-import screen1 from "../assets/screens/Barwise screen 1.png";
-import screen2 from "../assets/screens/Barwise screen 2.png";
-import screen3 from "../assets/screens/Barwise screen 3.png";
-import screen4 from "../assets/screens/Barwise screen 4.png"; // opzionale: se vuoi 4 slide
-// Metti il logo in /src/assets con questo nome, oppure sposta in /public e usa "/barwise-logo.png"
-import logoUrl from "../assets/Barwise_lite_512_noBorder_3.jpg";
+import { Component, createSignal, onMount, onCleanup } from "solid-js"
+import logoUrl from "../assets/Ahead 512.png"
+
+// Auto-importa tutti gli screenshot
+const files = import.meta.glob("../assets/screens/*.{png,jpg,jpeg,webp,bmp,avif}", {
+	eager: true,
+	as: "url",
+})
+
+// Ordina per nome file (es. screen1, screen2...)
+const slides = Object.keys(files)
+	.sort()
+	.map((k) => (files as Record<string, string>)[k])
+
+const [slide, setSlide] = createSignal(0)
 
 /**
- * Landing page "one-page" per BarWise — aggiornata sui contenuti reali
- * - SolidJS + TailwindCSS
- * - Sezioni verticali, header sticky, CTA
- * - Palette: #66cc8a, bianco, nero
- * - Copy semplificato e allettante, fedele alle feature elencate
+ * Landing page "one-page" per AHEAD
+ * - Palette: blu profondo (blue-700/800), grigi neutri e accenti bianchi
+ * - Stile solido, minimal e tech
+ * - Copy basato su pianificazione finanziaria, multi-account e previsioni
  */
-const BarwiseLanding: Component = () => {
-	const [menuOpen, setMenuOpen] = createSignal(false);
-	// Auto-importa tutte le immagini nella cartella screens (png/jpg/jpeg/webp/bmp/avif)
-	const files = import.meta.glob("../assets/screens/*.{png,jpg,jpeg,webp,bmp,avif}", {
-		eager: true,
-		as: "url",
-	});
-
-	// Ordina per nome file (puoi personalizzare l'ordine come vuoi)
-	const slides = Object.keys(files)
-		.sort()
-		.map((k) => (files as Record<string, string>)[k]);
-
-	const [slide, setSlide] = createSignal(0);
-	const DIRS = ["pan-h", "pan-v", "pan-d1", "pan-d2"] as const;
-	const randomDir = () => DIRS[Math.floor(Math.random() * DIRS.length)];
-	const [dirs, setDirs] = createSignal<string[]>(slides.map(() => randomDir()));
+const Landing: Component = () => {
+	const [menuOpen, setMenuOpen] = createSignal(false)
 
 	const smoothScroll = (e: Event) => {
-		const target = e.currentTarget as HTMLAnchorElement;
-		const href = target.getAttribute("href");
-		if (!href || !href.startsWith("#")) return;
-		e.preventDefault();
-		const el = document.querySelector(href);
-		if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-		setMenuOpen(false);
-	};
+		const target = e.currentTarget as HTMLAnchorElement
+		const href = target.getAttribute("href")
+		if (!href || !href.startsWith("#")) return
+		e.preventDefault()
+		const el = document.querySelector(href)
+		if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+		setMenuOpen(false)
+	}
 
 	onMount(() => {
-		const header = document.getElementById("bw-header");
+		const header = document.getElementById("ahead-header")
 		const onScroll = () => {
-			if (!header) return;
-			header.classList.toggle("shadow-lg", window.scrollY > 10);
-		};
-		window.addEventListener("scroll", onScroll);
-		onScroll();
+			if (header) header.classList.toggle("shadow-lg", window.scrollY > 10)
+		}
+		window.addEventListener("scroll", onScroll)
+		onScroll()
 
+		// 🔹 cambio automatico slide
 		const id = setInterval(() => {
-			setSlide((s) => {
-				const next = (s + 1) % slides.length;
-				setDirs((prev) => {
-					const copy = prev.slice();
-					copy[next] = randomDir(); // nuova direzione per la prossima slide visibile
-					return copy;
-				});
-				return next;
-			});
-		}, 6000);
+			setSlide((s) => (s + 1) % slides.length)
+		}, 6000)
 
-		// pausa quando la tab è nascosta (risparmia batteria)
-		const onVis = () => {
-			if (document.hidden) clearInterval(id);
-		};
-		document.addEventListener("visibilitychange", onVis);
-
-		onCleanup(() => {
-			clearInterval(id);
-			document.removeEventListener("visibilitychange", onVis);
-		});
-	});
+		onCleanup(() => clearInterval(id))
+	})
 
 	const logout = () => {
-		localStorage.removeItem("bw_invited");
-		window.location.reload(); // torna alla pagina di accesso
-	};
-
-
-
+		localStorage.removeItem("ahead_invited")
+		window.location.reload()
+	}
 
 	return (
-		<div class="bg-black text-white selection:bg-[#66cc8a] selection:text-black">
+		<div class="bg-[#0f172a] text-white selection:bg-blue-700 selection:text-white">
 			{/* Header */}
 			<header
-				id="bw-header"
-				class="sticky top-0 z-40 w-full border-b border-white/10 bg-black/70 backdrop-blur-md transition-shadow"
+				id="ahead-header"
+				class="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0f172a]/80 backdrop-blur-md transition-shadow"
 			>
 				<div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
 					<a href="#top" onClick={smoothScroll} class="flex items-center gap-3">
 						<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-							<img
-								src={logoUrl}
-								alt="BarWise logo"
-								class="h-6 w-6 rounded-full"
-							/>
+							<img src={logoUrl} alt="Ahead logo" class="h-6 w-6 rounded-full" />
 						</div>
 						<span class="text-lg font-semibold tracking-wide">
-							<span class="text-[#66cc8a]">Bar</span>Wise
+							<span class="text-blue-500">AHEAD</span>
 						</span>
 					</a>
 
-					{/* Desktop nav */}
 					<nav class="hidden gap-6 md:flex">
 						{[
 							["Home", "#hero"],
-							["Specifiche", "#features"],
-							// ["Moduli", "#modules"],
+							["Funzioni", "#features"],
 							["Come funziona", "#how"],
-							// ["Iniziamo", "#pricing"],
 							["FAQ", "#faq"],
 						].map(([label, href]) => (
 							<a
@@ -123,17 +88,14 @@ const BarwiseLanding: Component = () => {
 						))}
 					</nav>
 
-					{/* CTA + Mobile menu */}
 					<div class="flex items-center gap-3">
 						<a
 							href="#cta"
 							onClick={smoothScroll}
-							class="hidden rounded-xl bg-[#66cc8a] px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110 md:inline-block"
+							class="hidden rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 md:inline-block"
 						>
 							Contattaci
 						</a>
-
-						{/* NUOVO: bottone Esci (desktop) */}
 						<button
 							type="button"
 							onClick={logout}
@@ -141,7 +103,6 @@ const BarwiseLanding: Component = () => {
 						>
 							Esci
 						</button>
-
 						<button
 							class="md:hidden"
 							aria-label="Apri menu"
@@ -159,17 +120,14 @@ const BarwiseLanding: Component = () => {
 					</div>
 				</div>
 
-				{/* Mobile nav */}
 				<div
-					class={`md:hidden ${menuOpen() ? "block" : "hidden"} border-t border-white/10 bg-black`}
+					class={`md:hidden ${menuOpen() ? "block" : "hidden"} border-t border-white/10 bg-[#0f172a]`}
 				>
 					<nav class="mx-auto flex max-w-7xl flex-col px-5 py-3">
 						{[
 							["Home", "#hero"],
-							["Specifiche", "#features"],
-							// ["Moduli", "#modules"],
+							["Funzioni", "#features"],
 							["Come funziona", "#how"],
-							// ["Iniziamo", "#pricing"],
 							["FAQ", "#faq"],
 						].map(([label, href]) => (
 							<a
@@ -183,7 +141,7 @@ const BarwiseLanding: Component = () => {
 						<a
 							href="#cta"
 							onClick={smoothScroll}
-							class="mt-2 rounded-xl bg-[#66cc8a] px-4 py-2 text-center text-sm font-semibold text-black"
+							class="mt-2 rounded-xl bg-blue-700 px-4 py-2 text-center text-sm font-semibold text-white"
 						>
 							Contattaci
 						</a>
@@ -191,87 +149,80 @@ const BarwiseLanding: Component = () => {
 				</div>
 			</header>
 
-			{/* Hero aggiornato */}
+			{/* Hero */}
 			<section id="hero" class="relative isolate overflow-hidden">
-				<div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
-					<div class="absolute left-1/2 top-[-15%] h-[60vh] w-[60vh] -translate-x-1/2 rounded-full bg-[#66cc8a]/20 blur-[120px]" />
-					<div class="absolute right-[-10%] bottom-[-10%] h-[40vh] w-[40vh] rounded-full bg-[#66cc8a]/10 blur-[120px]" />
+				<div aria-hidden class="pointer-events-none absolute inset-0 -z-10">
+					<div class="absolute left-1/2 top-[-15%] h-[60vh] w-[60vh] -translate-x-1/2 rounded-full bg-blue-700/20 blur-[120px]" />
+					<div class="absolute right-[-10%] bottom-[-10%] h-[40vh] w-[40vh] rounded-full bg-blue-800/10 blur-[120px]" />
 				</div>
 
 				<div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-5 pb-20 pt-16 md:grid-cols-2 md:pb-28 md:pt-24">
 					<div class="space-y-6">
-						<p class="inline-block rounded-full border border-[#66cc8a]/30 bg-[#66cc8a]/10 px-3 py-1 text-xs font-semibold tracking-wide text-[#66cc8a]">
-							Il nuovo gestionale smart per il tuo locale
+						<p class="inline-block rounded-full border border-blue-700/30 bg-blue-700/10 px-3 py-1 text-xs font-semibold tracking-wide text-blue-400">
+							Il tuo futuro finanziario, chiaro e sotto controllo
 						</p>
 						<h1 class="text-4xl font-extrabold leading-tight md:text-6xl">
-							Più servizio, meno pensieri.
-							<div class="text-[#66cc8a] mt-4">Ci pensa BarWise.</div>
+							Pianifica. Prevedi. Cresci.
+							<div class="text-blue-600 mt-4">Con AHEAD.</div>
 						</h1>
 						<p class="max-w-prose text-lg opacity-80">
-							Il gestionale per ristoranti e bar pensato da chi lavora per chi lavora: comande veloci,
-							stampe per reparto, gestione delle scorte, storico e statistiche.<br />
-							{/* <span class="font-semibold">Salta internet? Tu no.</span> */}
+							AHEAD è il gestionale previsionale per monitorare, pianificare e
+							simulare l’evoluzione dei tuoi conti nel tempo — in tutte le valute,
+							con inflazione, rendimenti e trasferimenti automatici. Guarda il tuo
+							futuro finanziario con chiarezza.
 						</p>
 						<div class="flex flex-col gap-3 sm:flex-row">
 							<a
 								href="#cta"
 								onClick={smoothScroll}
-								class="rounded-xl bg-[#66cc8a] px-6 py-3 text-center font-semibold text-black transition hover:brightness-110"
+								class="rounded-xl bg-blue-700 px-6 py-3 text-center font-semibold text-white transition hover:brightness-110"
 							>
-								Inizia gratis
+								Provalo ora
 							</a>
 							<a
 								href="#features"
 								onClick={smoothScroll}
 								class="rounded-xl border border-white/15 px-6 py-3 text-center font-semibold hover:bg-white/5"
 							>
-								Specifiche
+								Scopri di più
 							</a>
 						</div>
 						<div class="flex flex-wrap items-center gap-4 pt-2 text-sm opacity-70">
-							<span>Database locale</span>
+							<span>Multi-account</span>
 							<span class="h-1 w-1 rounded-full bg-white/40" />
-							<span>Gestione pagamenti per quote</span>
+							<span>Multi-valuta</span>
 							<span class="h-1 w-1 rounded-full bg-white/40" />
-							<span>Preconto, post-stampe</span>
+							<span>Inflazione e rendimenti</span>
 						</div>
 					</div>
 
-					{/* Mockup vetrina */}
 					<div class="relative">
 						<div class="rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/[0.03] p-4 shadow-2xl">
 							<div class="relative overflow-hidden rounded-2xl bg-black ring-1 ring-white/10">
-
-								{/* Contenitore a dimensione fissa, responsivo */}
 								<div class="h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] w-full relative">
-									<div class="h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] w-full relative">
-										{slides.map((src, i) => (
-											<div
-												class={`absolute inset-0 transition-opacity duration-700
-        ${slide() === i ? "opacity-100 running" : "opacity-0 paused"}`}
-												aria-hidden={slide() !== i}
-											>
-												<div class="h-full w-full overflow-hidden">
-													<img
-														src={src}
-														alt={`Schermata BarWise ${i + 1}`}
-														class={`h-full w-full object-cover pan-base ${dirs()[i]} pointer-events-none select-none`}
-														draggable={false}
-														loading="eager"
-													/>
-												</div>
-											</div>
-										))}
-									</div>
-
+									{slides.map((src, i) => (
+										<div
+											class={`absolute inset-0 transition-opacity duration-700 ${slide() === i ? "opacity-100 running" : "opacity-0 paused"
+												}`}
+											aria-hidden={slide() !== i}
+										>
+											<img
+												src={src}
+												alt={`Schermata Ahead ${i + 1}`}
+												class="h-full w-full object-cover pointer-events-none select-none"
+												draggable={false}
+												loading="eager"
+											/>
+										</div>
+									))}
 								</div>
 
-								{/* Dots */}
+								{/* Dots indicatori */}
 								<div class="pointer-events-auto absolute bottom-3 left-0 right-0 flex justify-center gap-2">
 									{slides.map((_, i) => (
 										<button
-											class={`h-1.5 w-6 rounded-full transition
-              ${slide() === i ? "bg-[#66cc8a]" : "bg-white/30 hover:bg-white/50"}`}
+											class={`h-1.5 w-6 rounded-full transition ${slide() === i ? "bg-blue-600" : "bg-white/30 hover:bg-white/50"
+												}`}
 											onClick={() => setSlide(i)}
 											aria-label={`Vai alla slide ${i + 1}`}
 										/>
@@ -281,150 +232,82 @@ const BarwiseLanding: Component = () => {
 						</div>
 					</div>
 
-
 				</div>
-
-				<style>
-					{`
-  :root{
-    --bw-pan-scale: 1.01;  /* zoom per avere "spazio" da far scorrere */
-    --bw-pan-x: 2.2%;        /* ampiezza orizzontale */
-    --bw-pan-y: 1.4%;      /* ampiezza verticale */
-    --bw-pan-duration: 11s; /* velocità dello scorrimento */
-  }
-
-  /* Keyframes per le varie direzioni */
-  @keyframes bw-panH{
-    0%   { transform: scale(var(--bw-pan-scale)) translateX(calc(var(--bw-pan-x) * -1)); }
-    100% { transform: scale(var(--bw-pan-scale)) translateX(var(--bw-pan-x)); }
-  }
-  @keyframes bw-panV{
-    0%   { transform: scale(var(--bw-pan-scale)) translateY(calc(var(--bw-pan-y) * -1)); }
-    100% { transform: scale(var(--bw-pan-scale)) translateY(var(--bw-pan-y)); }
-  }
-  @keyframes bw-panD1{
-    0%   { transform: scale(var(--bw-pan-scale)) translate(calc(var(--bw-pan-x) * -1), calc(var(--bw-pan-y) * -1)); }
-    100% { transform: scale(var(--bw-pan-scale)) translate(var(--bw-pan-x), var(--bw-pan-y)); }
-  }
-  @keyframes bw-panD2{
-    0%   { transform: scale(var(--bw-pan-scale)) translate(var(--bw-pan-x), calc(var(--bw-pan-y) * -1)); }
-    100% { transform: scale(var(--bw-pan-scale)) translate(calc(var(--bw-pan-x) * -1), var(--bw-pan-y)); }
-  }
-
-  /* Base animation + varianti di direzione */
-  .pan-base{
-    animation-duration: var(--bw-pan-duration);
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    will-change: transform;
-  }
-  .pan-h  { animation-name: bw-panH; }
-  .pan-v  { animation-name: bw-panV; }
-  .pan-d1 { animation-name: bw-panD1; }
-  .pan-d2 { animation-name: bw-panD2; }
-
-  /* Play/Pause in base alla slide visibile (i tuoi wrapper hanno "running/paused") */
-  .paused  .pan-base { animation-play-state: paused;  }
-  .running .pan-base { animation-play-state: running; }
-
-  /* Accessibilità */
-  @media (prefers-reduced-motion: reduce){
-    .pan-base { animation: none !important; transform: none !important; }
-  }
-  `}
-				</style>
-
 
 			</section>
 
-			{/* Funzioni chiave: riscritte */}
+			{/* Features */}
 			<section id="features" class="mx-auto max-w-7xl px-5 py-16 md:py-24">
 				<h2 class="mb-10 text-3xl font-extrabold md:text-4xl">
-					Solo ciò che serve. <span class="text-[#66cc8a]">Davvero.</span>
+					Un solo sguardo. <span class="text-blue-500">Tutto il tuo patrimonio.</span>
 				</h2>
 
 				<div class="grid gap-6 md:grid-cols-3">
 					{[
 						{
-							title: "Locale & Offline",
+							title: "Multi-account e multi-valuta",
 							desc:
-								"Lavora su database locale: i tuoi dati sono totalmente privati, disponibili solo a te.",
+								"Collega tutti i tuoi conti — bancari, investimenti, crypto, asset fisici — anche in valute diverse.",
 						},
 						{
-							title: "Multi-stampante / Multi-cassa",
+							title: "Ricorrenze intelligenti",
 							desc:
-								"Gestisci in modo semplice più stampanti per reparto e più casse fiscali in parallelo.",
+								"Pianifica entrate e uscite periodiche con date, valute, durata e indicizzazione all’inflazione.",
 						},
 						{
-							title: "Aree & Tavoli",
+							title: "Trasferimenti automatici",
 							desc:
-								"Crea Aree e Tavoli come vuoi. Sposta conti ed etichetta un tavolo quando ti serve.",
+								"Imposta soglie e regole per spostare fondi tra conti in base alle tue strategie di equilibrio.",
 						},
 						{
-							title: "Preconto & Post-stampe",
+							title: "Rendimenti dinamici",
 							desc:
-								"Stampa il preconto in un clic. Trasmetti ordini per reparto con la post-stampa quando ne hai bisogno.",
+								"Assegna tassi di rendimento ai tuoi account per stimare la crescita di investimenti o riserve.",
 						},
 						{
-							title: "Fasi di preparazione",
+							title: "Simulazioni decennali",
 							desc:
-								"Organizza ogni comanda in fasi di preparazione per una gestione precisa e senza intoppi.",
+								"Genera evoluzioni realistiche dei saldi per decine d’anni, con l’impatto di inflazione e performance.",
 						},
 						{
-							title: "Messaggistica interna",
+							title: "Delta automatico vs previsione",
 							desc:
-								"Lo Staff si scambia messaggi e allega note alle comande: tutti sanno cosa fare, subito.",
+								"Vedi in tempo reale se stai andando meglio o peggio del previsto, se hai surplus spendibili o gap da colmare.",
 						},
 						{
-							title: "Pagamenti flessibili",
+							title: "Grafici e viste personalizzate",
 							desc:
-								"Dividi per quote o usa i subtotali, non è mai stato così semplice",
+								"Crea viste aggregate, scegli valuta e orizzonte temporale. Visualizza ciò che conta davvero.",
 						},
 						{
-							title: "Stock",
+							title: "Cambio valute aggiornato",
 							desc:
-								"Imposta lo stock per prodotto, ricevi avvisi a esaurimento e blocca la vendita automaticamente.",
+								"Ahead integra tassi di cambio aggiornati per convertire e confrontare facilmente i tuoi conti internazionali.",
 						},
 						{
-							title: "Ricerca prodotti",
+							title: "Sicurezza di livello enterprise",
 							desc:
-								"Trova subito ciò che cerchi grazie alla ricerca intelligente e ai tag personalizzati.",
+								"I tuoi dati sono protetti con cifratura AES-256, autenticazione sicura (JWT) e politiche di Row-Level Security. Solo tu puoi accedere alle tue informazioni.",
 						},
 						{
-							title: "PIN & permessi",
+							title: "Sincronizzazione in tempo reale",
 							desc:
-								"Ogni membro del tuo Staff ha un PIN d’accesso e privilegi su misura scelti da te.",
+								"Ogni modifica che fai viene salvata e aggiornata all’istante su tutti i tuoi dispositivi: desktop, tablet e smartphone.",
 						},
 						{
-							title: "Backup nativi",
+							title: "Multipiattaforma & PWA",
 							desc:
-								"Importa delle strutture iniziali di default o crea i tuoi backup. Puoi ripristinarli quando vuoi.",
+								"Ahead funziona su Windows, macOS e smartphone. Puoi anche installarlo come app PWA per un’esperienza nativa, senza download.",
 						},
 						{
-							title: "Formati e Varianti",
+							title: "Interfaccia chiara e intuitiva",
 							desc:
-								"Gestisci ogni prodotto in più formati e varianti di prezzo, con la massima flessibilità.",
-						},
-						{
-							title: "Storico e statistiche",
-							desc:
-								"Storico ordini: vedi volumi, best seller e orari caldi — solo se vuoi tenerli.",
-						},
-						{
-							title: "Ordini senza tavolo",
-							desc:
-								"Gestisci comande senza tavolo con semplice riferimento al cliente.",
-						},
-						{
-							title: "Gestione prodotti rapida e completa",
-							desc:
-								"Crea, modifica, cancella o nascondi prodotti in pochi passaggi.",
+								"Tutta la complessità di un previsionale semplificata in un design pulito e minimal, per concentrarti solo sui tuoi obiettivi.",
 						},
 					].map((f) => (
 						<div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
 							<div class="flex gap-3">
-								<div class="mb-3 h-8 w-8 rounded-lg bg-[#66cc8a]" />
+								<div class="mb-3 h-8 w-8 rounded-lg bg-blue-700/70 text-blue-600 font-bold flex items-center justify-center">A</div>
 								<h3 class="mb-1 text-lg font-semibold">{f.title}</h3>
 							</div>
 							<p class="text-sm opacity-80">{f.desc}</p>
@@ -433,87 +316,35 @@ const BarwiseLanding: Component = () => {
 				</div>
 			</section>
 
-			{/* Moduli specifici: tutto ciò che puoi voler usare */}
-			{/* <section id="modules" class="bg-white/[0.03]">
-				<div class="mx-auto max-w-7xl px-5 py-16 md:py-24">
-					<h2 class="mb-4 text-3xl font-extrabold md:text-4xl">Moduli BarWise</h2>
-					<p class="mb-10 max-w-prose opacity-80">
-						Attiva solo ciò che ti serve. Al resto…{" "}
-						<span class="text-[#66cc8a] font-semibold">ci pensa BarWise</span>.
-					</p>
-
-					<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-						{[
-							"Presa comande",
-							"Stampe termiche per reparto",
-							"Preconto",
-							"Post-stampa ordini",
-							"Gestione sale e tavoli",
-							"Secondo nome tavolo",
-							"Ordini senza tavolo",
-							"Pagamenti per quote / subtotale",
-							"Spostamento conto tra tavoli",
-							"Multi-cassa fiscale",
-							"Multi-stampante",
-							"Messaggistica interna & note in comanda",
-							"Gestione prodotti",
-							"Formati con prezzi",
-							"Categorie multiple",
-							"Varianti di prezzo",
-							"Tag prodotto",
-							"Stock & blocco vendite",
-							"Storico ordini & statistiche",
-							"Utenti, PIN e permessi",
-							"Backup: import/export",
-							"Sincronizzazione locale Triplit",
-						].map((m) => (
-							<div class="flex items-center gap-3 rounded-xl border border-white/10 bg-black/60 p-4">
-								<svg viewBox="0 0 24 24" class="h-5 w-5">
-									<path
-										d="M20 6L9 17l-5-5"
-										stroke="#66cc8a"
-										stroke-width="2"
-										fill="none"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									/>
-								</svg>
-								<span class="text-sm">{m}</span>
-							</div>
-						))}
-					</div>
-				</div>
-			</section> */}
-
 			{/* Come funziona */}
 			<section id="how" class="mx-auto max-w-7xl px-5 py-16 md:py-24">
-				<h2 class="mb-8 text-3xl font-extrabold md:text-4xl">Come funziona</h2>
+				<h2 class="mb-8 text-3xl font-extrabold md:text-4xl">
+					Come funziona <span class="text-blue-600">AHEAD</span>
+				</h2>
 
 				<ol class="grid gap-6 md:grid-cols-3">
 					{[
 						{
 							step: "1",
-							title: "Configura",
+							title: "Configura i tuoi account",
 							desc:
-								"Crea sale e tavoli, aggiungi prodotti, imposta stampanti e casse fiscali. Importa un backup se vuoi partire già pronto.",
+								"Aggiungi conti correnti, investimenti o asset. Imposta valute e rendimenti attesi.",
 						},
 						{
 							step: "2",
-							title: "Prendi gli ordini",
+							title: "Aggiungi ricorrenze e trasferimenti",
 							desc:
-								"Comande veloci con note e messaggi interni. Stampa automatica su reparto, anche offline.",
+								"Registra entrate e uscite periodiche, definisci regole di spostamento automatico.",
 						},
 						{
 							step: "3",
-							title: "Chiudi & analizza",
+							title: "Analizza le proiezioni ed il trend",
 							desc:
-								"Preconto, pagamenti per quote o subtotale, statistiche e storico ordini.",
+								"Consulta grafici e tabelle per scoprire il tuo andamento rispetto alle previsioni e come evolveranno i tuoi saldi nei prossimi anni.",
 						},
 					].map((s) => (
 						<li class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-							<div class="mb-2 text-2xl font-extrabold text-[#66cc8a]">
-								{s.step}
-							</div>
+							<div class="mb-2 text-2xl font-extrabold text-blue-500">{s.step}</div>
 							<h3 class="mb-1 text-lg font-semibold">{s.title}</h3>
 							<p class="text-sm opacity-80">{s.desc}</p>
 						</li>
@@ -521,104 +352,34 @@ const BarwiseLanding: Component = () => {
 				</ol>
 			</section>
 
-			{/* Pricing teaser + CTA */}
-			{/* <section id="pricing" class="bg-gradient-to-b from-white/[0.03] to-transparent">
-				<div class="mx-auto max-w-7xl px-5 py-16 md:py-24">
-					<h2 class="mb-4 text-3xl font-extrabold md:text-4xl">
-						Zero sorprese.
-					</h2>
-					<p class="mb-10 max-w-prose opacity-80">
-						Parti gratis, dacci un tuo feedback. Parliamone.
-					</p>
-
-					<div class="grid gap-6 md:grid-cols-3">
-						{[
-							{
-								name: "Start",
-								price: "Gratis",
-								features: [
-									"Presa comande",
-									"Stampe di reparto",
-									"1 cassa fiscale",
-								],
-							},
-							{
-								name: "Pro",
-								price: "€",
-								badge: "Più scelto",
-								features: [
-									"Multi-stampante",
-									"Multi-cassa fiscale",
-									"Stock & Varianti",
-								],
-							},
-							{
-								name: "Enterprise",
-								price: "Su misura",
-								features: [
-									"Multi-sede",
-									"Permessi granulari",
-									"Supporto dedicato",
-								],
-							},
-						].map((p) => (
-							<div class="relative rounded-3xl border border-white/10 bg-black/60 p-6">
-								{p.badge && (
-									<span class="absolute right-4 top-4 rounded-full bg-[#66cc8a] px-2 py-1 text-xs font-bold text-black">
-										{p.badge}
-									</span>
-								)}
-								<h3 class="mb-2 text-xl font-semibold">{p.name}</h3>
-								<div class="mb-4 text-3xl font-extrabold">{p.price}</div>
-								<ul class="mb-6 space-y-2 text-sm opacity-80">
-									{p.features.map((f) => (
-										<li class="flex items-center gap-2">
-											<span class="inline-block h-1.5 w-1.5 rounded-full bg-[#66cc8a]" />
-											{f}
-										</li>
-									))}
-								</ul>
-								<a
-									href="#cta"
-									onClick={smoothScroll}
-									class="block rounded-xl bg-[#66cc8a] px-4 py-2 text-center font-semibold text-black hover:brightness-110"
-								>
-									Provalo ora
-								</a>
-							</div>
-						))}
-					</div>
-				</div>
-			</section> */}
-
-			{/* FAQ mirate */}
+			{/* FAQ */}
 			<section id="faq" class="mx-auto max-w-7xl px-5 py-16 md:py-24">
 				<h2 class="mb-8 text-3xl font-extrabold md:text-4xl">FAQ</h2>
 				<div class="grid gap-4 md:grid-cols-2">
 					{[
 						[
-							"Funziona senza internet?",
-							"Sì. BarWise lavora in locale su Triplit: se la rete cade, continui a prendere comande e stampare.",
+							"È un'app online?",
+							"Ahead funziona nel browser e può essere installata come app PWA. I dati vengono salvati in modo sicuro con sincronizzazione cloud opzionale.",
 						],
 						[
-							"Posso usare più stampanti o più casse fiscali?",
-							"Sì, è pensato per multi-stampante e multi-cassa, anche in contemporanea.",
+							"Posso gestire più valute?",
+							"Sì. Tutti i conti, ricorrenze e trasferimenti possono essere in valute diverse, con tassi di cambio aggiornabili in tempo reale.",
 						],
 						[
-							"Gestite stock e blocco prodotti?",
-							"Sì: imposti le scorte, ricevi avvisi e puoi bloccare la vendita quando finiscono.",
+							"Posso simulare l'inflazione?",
+							"Puoi collegare ogni ricorrenza all’inflazione o impostare un tasso personalizzato per una previsione più precisa.",
 						],
 						[
-							"Come gestisco il personale?",
-							"Ogni membro dello staff ha un PIN e permessi configurabili dall’admin.",
+							"Posso analizzare rendimenti e investimenti?",
+							"Certo. Ogni account può avere un tasso di rendimento: Ahead calcola automaticamente la crescita e il delta rispetto alle previsioni.",
 						],
 						[
-							"Posso spostare un conto su un altro tavolo o fare scontrini parziali?",
-							"Certo: spostamento conto tra tavoli, pagamento per quote o subtotale e preconto integrato.",
+							"Posso usarlo su più dispositivi?",
+							"Sì. Ahead sincronizza automaticamente le modifiche tra tutti i tuoi device — desktop, laptop e smartphone — in tempo reale.",
 						],
 						[
-							"Posso fare ordini senza tavolo?",
-							"Sì, puoi associare solo un riferimento cliente (es. nome) e stampare comunque.",
+							"È gratuito?",
+							"La versione base è gratuita. Ahead è in sviluppo attivo e introdurrà piani premium solo per funzioni avanzate.",
 						],
 					].map(([q, a]) => (
 						<div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
@@ -629,66 +390,47 @@ const BarwiseLanding: Component = () => {
 				</div>
 			</section>
 
+
 			{/* CTA finale */}
-			<section id="cta" class="bg-[#66cc8a] text-black">
+			<section id="cta" class="bg-blue-700 text-white">
 				<div class="mx-auto max-w-7xl px-5 py-16 md:py-24">
 					<div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
 						<div>
 							<h2 class="text-3xl font-extrabold md:text-4xl">
-								Pronto a servire al meglio?
+								Porta avanti le tue finanze. Con AHEAD.
 							</h2>
-							<p class="mt-2 max-w-prose opacity-80">
-								Comincia gratis e dacci il tuo feedback! Parliamone.
+							<p class="mt-2 max-w-prose opacity-80 whitespace-nowrap">
+								Registrati, imposta i tuoi conti e scopri subito la chiarezza del
+								tuo futuro finanziario.
 							</p>
 						</div>
 						<div class="flex gap-3">
 							<a
-								href="https://wa.me/393476609338?text=Ciao%20!%20Vorrei%20saperne%20di%20pi%C3%B9%20su%20BarWise%20"
+								href="https://wa.me/393476609338?text=Ciao%20!%20Vorrei%20saperne%20di%20pi%C3%B9%20su%20Ahead"
 								target="_blank"
 								rel="noopener noreferrer"
-								class="flex items-center gap-2 rounded-xl bg-black px-6 py-3 font-semibold text-white hover:opacity-90"
+								class="flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-blue-800 hover:opacity-90"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="currentColor"
-									viewBox="0 0 24 24"
-									class="h-5 w-5"
-								>
-									<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.148-.67.15-.197.297-.767.967-.94 1.164-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.67-1.611-.916-2.206-.242-.579-.487-.5-.67-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.017-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.1 3.203 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.414.248-.694.248-1.288.173-1.414-.074-.124-.272-.198-.57-.347zM12.004 2.003c-5.523 0-10 4.477-10 10 0 1.769.465 3.505 1.35 5.036L2 22l5.113-1.333c1.475.806 3.138 1.229 4.89 1.229h.001c5.523 0 10-4.477 10-10s-4.477-10-10-10z" />
-								</svg>
-								Contattaci su WhatsApp
+								Contattaci
 							</a>
 						</div>
 					</div>
 				</div>
 			</section>
 
-
 			{/* Footer */}
 			<footer class="border-t border-white/10">
 				<div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm opacity-70 md:flex-row">
 					<div class="flex items-center gap-3">
 						<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-							<img
-								src={logoUrl}
-								alt="BarWise logo"
-								class="h-6 w-6 rounded-full"
-							/>
+							<img src={logoUrl} alt="Ahead logo" class="h-6 w-6 rounded-full" />
 						</div>
-						<span>{new Date().getFullYear()} BarWise</span>
+						<span>{new Date().getFullYear()} AHEAD</span>
 					</div>
-					{/* <div class="flex gap-4">
-						<a href="#features" onClick={smoothScroll} class="hover:opacity-100">Funzioni</a>
-						<a href="#pricing" onClick={smoothScroll} class="hover:opacity-100">Prezzi</a>
-						<a href="#faq" onClick={smoothScroll} class="hover:opacity-100">FAQ</a>
-					</div> */}
 				</div>
 			</footer>
 		</div>
+	)
+}
 
-	);
-
-
-};
-
-export default BarwiseLanding;
+export default Landing
