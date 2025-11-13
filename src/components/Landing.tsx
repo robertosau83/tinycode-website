@@ -20,7 +20,7 @@ const Landing: Component = () => {
           <img
             src={aheadLogo}
             alt="AHead logo"
-            class="w-24 h-24 rounded-xl object-contain"
+            class="w-24 h-24 rounded-xl object-contain border shadow-lg"
           />
           <div class="flex-1 text-center sm:text-left">
             <h2 class="text-2xl font-semibold text-gray-900">AHEAD</h2>
@@ -56,7 +56,7 @@ const Landing: Component = () => {
           <img
             src={barwiseLogo}
             alt="Barwise logo"
-            class="w-24 h-24 rounded-xl object-contain"
+            class="w-24 h-24 rounded-xl object-contain border shadow-lg"
           />
           <div class="flex-1 text-center sm:text-left">
             <h2 class="text-2xl font-semibold text-gray-900">Barwise</h2>
