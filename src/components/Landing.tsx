@@ -1,6 +1,7 @@
 import { Component } from "solid-js"
 import aheadLogo from "../assets/Ahead 512.png"
 import barwiseLogo from "../assets/Barwise 512.png"
+import wiseflowLogo from "../assets/wiseflow 512.png"
 
 const Landing: Component = () => {
   return (
@@ -86,6 +87,42 @@ const Landing: Component = () => {
             </div>
           </div>
         </section>
+
+		  {/* WISEFLOW */}
+<section class="w-full bg-white shadow-md rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center gap-6 transition hover:shadow-lg">
+  <img
+    src={wiseflowLogo}
+    alt="Wiseflow logo"
+    class="w-24 h-24 rounded-xl object-contain border shadow-lg"
+  />
+  <div class="flex-1 text-center sm:text-left">
+    <h2 class="text-2xl font-semibold text-gray-900">Wiseflow</h2>
+    <p class="mt-2 text-gray-600 leading-relaxed">
+      La piattaforma contabile pensata per bar e ristoranti: incassi giornalieri,
+      movimenti extra cassa, estratti conto PDF, scadenze, budget e dashboard
+      avanzate — tutto in un unico flusso semplice e potente. Monitora cassa,
+      conti bancari, margini e storico con una chiarezza mai vista.
+    </p>
+
+    <p class="mt-4 text-gray-500 italic">
+      Accesso riservato agli utenti invitati.
+    </p>
+
+    <div class="mt-4">
+      <p class="text-gray-700 font-medium mb-2">
+        Hai un codice di invito?
+      </p>
+      <a
+        href="https://wiseflow-xp-site.vercel.app"
+        target="_blank"
+        class="inline-block px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+      >
+        Vai al sito
+      </a>
+    </div>
+  </div>
+</section>
+
       </main>
 
       {/* Footer */}
